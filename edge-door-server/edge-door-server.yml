@@ -1,0 +1,5 @@
+---
+ipv4_url: https://s3.eu-west-2.amazonaws.com/acme-edge-dst/ipv4.txt
+ipv6_url: https://s3.eu-west-2.amazonaws.com/acme-edge-dst/ipv6.txt
+templates:
+  - roaming-nfs.sh.tmpl

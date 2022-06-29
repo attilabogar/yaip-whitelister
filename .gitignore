@@ -1,0 +1,20 @@
+# editors
+*.swp
+*.swo
+*.bak
+.vscode/
+
+# apple
+.DS_Store
+
+# terraform / terragrunt
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform.lock.hcl
+.terraform/
+.terragrunt-cache/
+
+# binaries
+/edge-door-key/edge-door-key
+/edge-door-server/edge-door-server

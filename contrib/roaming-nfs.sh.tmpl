@@ -1,0 +1,30 @@
+#!/bin/bash
+
+cat > /etc/exports.d/roaming.exports <<EOD
+
+#
+# ALLOW roaming
+#
+{{- if .IPList4 }}
+{{- range .IPList4 }}
+# {{ . }}
+# exports
+/srv/export                     {{ . }}(insecure,ro,fsid=0)
+
+/srv/export/audioset		{{ . }}(insecure,rw,all_squash,anonuid=1000,anongid=1000)
+/srv/export/videoset		{{ . }}(insecure,rw,all_squash,anonuid=1000,anongid=1000)
+{{- end}}
+{{- end}}
+
+{{- if .IPList6 }}
+{{- range .IPList6 }}
+# {{ . }}
+# exports
+/srv/export                     {{ . }}(insecure,ro,fsid=0)
+/srv/export/audioset		{{ . }}(insecure,rw,all_squash,anonuid=1000,anongid=1000)
+/srv/export/videoset		{{ . }}(insecure,rw,all_squash,anonuid=1000,anongid=1000)
+{{- end}}
+{{- end}}
+EOD
+
+systemctl reload nfs-server

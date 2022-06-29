@@ -1,0 +1,8 @@
+[Unit]
+Description=Edge Door Server
+
+[Timer]
+OnCalendar=*:*:0/20
+
+[Install]
+WantedBy=timers.target

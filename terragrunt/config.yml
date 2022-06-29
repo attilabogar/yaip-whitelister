@@ -1,0 +1,7 @@
+---
+aws_region: eu-west-2
+aws_profile: acme
+project: acme
+users:
+  - edge-alice
+  - edge-bob

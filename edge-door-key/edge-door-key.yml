@@ -1,0 +1,6 @@
+---
+user_name: edge-alice
+aws_s3_bucket: acme-edge-src
+aws_region: eu-west-2
+aws_access_key: _TOP_SECRET_
+aws_secret_key: _TOP_SECRET_
