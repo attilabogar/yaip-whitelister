@@ -102,7 +102,7 @@ func dropKey(c conf, key string) {
       // Message from an error.
       log.Fatal(err.Error())
     }
-    os.Exit(1)
+    // os.Exit(1)
   }
 }
 
