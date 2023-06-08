@@ -48,7 +48,7 @@ func usage() {
 }
 
 func getIP4() string {
-  res, err := http.Get("https://api.ipify.org")
+  res, err := http.Get("https://api4.ipify.org")
   if err != nil {
     return ""
   }
