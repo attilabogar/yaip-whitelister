@@ -180,9 +180,6 @@ func doorOpen(c conf, v4 bool, v6 bool) {
     fmt.Println(os.Args[0] + ": door opened for "+c.UserName+"@" + myip4)
     setIPCache(public4, myip4)
   }
-  if len(myip4) == 0 {
-    dropKey(c, "ipv4/"+c.UserName)
-  }
   // IPv6
   if len(myip6) > 0 && myip6 != oldip6 {
     uploader.Upload(&s3manager.UploadInput{
@@ -194,9 +191,6 @@ func doorOpen(c conf, v4 bool, v6 bool) {
     })
     fmt.Println(os.Args[0] + ": door opened for "+c.UserName+"@" + myip6)
     setIPCache(public6, myip6)
-  }
-  if len(myip6) == 0 {
-    dropKey(c, "ipv6/"+c.UserName)
   }
 }
 
