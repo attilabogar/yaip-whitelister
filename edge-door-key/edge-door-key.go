@@ -6,6 +6,7 @@ import (
   "log"
   "strings"
   "io/ioutil"
+  "net"
   "net/http"
   "gopkg.in/yaml.v2"
   "github.com/aws/aws-sdk-go/aws"
@@ -25,6 +26,8 @@ type conf struct {
 }
 
 const configfile string = "edge-door-key.yml"
+const public4 string = "/tmp/my-ipv4.txt"
+const public6 string = "/tmp/my-ipv6.txt"
 
 func (c *conf) getConf() *conf {
     dirname, err := os.UserHomeDir()
@@ -47,13 +50,18 @@ func usage() {
   os.Exit(2)
 }
 
+
+
 func getIP4() string {
   res, err := http.Get("https://api4.ipify.org")
   if err != nil {
     return ""
   }
   ip, _ := ioutil.ReadAll(res.Body)
-  return string(ip)
+  if net.ParseIP(string(ip)) != nil {
+    return string(ip)
+  }
+  return ""
 }
 
 func getIP6() string {
@@ -62,7 +70,36 @@ func getIP6() string {
     return ""
   }
   ip, _ := ioutil.ReadAll(res.Body)
-  return string(ip)
+  if net.ParseIP(string(ip)) != nil {
+    return string(ip)
+  }
+  return ""
+}
+
+func setIPCache(name string, ip string) {
+  err := ioutil.WriteFile(name, []byte(ip), 0644)
+  if err != nil {
+    panic(err)
+  }
+}
+
+func getIPCache(name string) string {
+  if _, err := os.Stat(name); os.IsNotExist(err) {
+    return ""
+  }
+
+  // there is a cached IP
+  f, err := os.Open(name)
+  if err != nil {
+    panic(err)
+  }
+  buf := make([]byte, 39)
+  num, err := f.Read(buf)
+  if net.ParseIP(string(buf[:num])) != nil {
+    // as expected
+    return string(buf[:num])
+  }
+  return ""
 }
 
 func initAWS(c conf) *session.Session {
@@ -110,15 +147,29 @@ func doorOpen(c conf, v4 bool, v6 bool) {
   sess := initAWS(c)
   var myip4 string = ""
   var myip6 string = ""
+  var oldip4 string = ""
+  var oldip6 string = ""
   if v4 {
     myip4 = getIP4()
+    oldip4 = getIPCache(public4)
+    if len(myip4) == 0 {
+      fmt.Println(os.Args[0] + ": failed to retrive public IPv4")
+    } else if myip4 == oldip4 {
+      fmt.Println(os.Args[0] + ": IPv4 still the same: " + myip4)
+    }
   }
   if v6 {
     myip6 = getIP6()
+    oldip6 = getIPCache(public6)
+    if len(myip6) == 0 {
+      fmt.Println(os.Args[0] + ": failed to retrive public IPv6")
+    } else if myip6 == oldip6 {
+      fmt.Println(os.Args[0] + ": IPv6 still the same: " + myip6)
+    }
   }
   uploader := s3manager.NewUploader(sess)
   // IPv4
-  if len(myip4) > 0 {
+  if len(myip4) > 0 && myip4 != oldip4 {
     uploader.Upload(&s3manager.UploadInput{
       ACL: aws.String("private"),
       Bucket: aws.String(c.Bucket),
@@ -127,11 +178,12 @@ func doorOpen(c conf, v4 bool, v6 bool) {
       Body: strings.NewReader(myip4),
     })
     fmt.Println(os.Args[0] + ": door opened for "+c.UserName+"@" + myip4)
+    setIPCache(public4, myip4)
   } else {
     dropKey(c, "ipv4/"+c.UserName)
   }
   // IPv6
-  if len(myip6) > 0 {
+  if len(myip6) > 0 && myip6 != oldip6 {
     uploader.Upload(&s3manager.UploadInput{
       ACL: aws.String("private"),
       Bucket: aws.String(c.Bucket),
@@ -140,6 +192,7 @@ func doorOpen(c conf, v4 bool, v6 bool) {
       Body: strings.NewReader(myip6),
     })
     fmt.Println(os.Args[0] + ": door opened for "+c.UserName+"@" + myip6)
+    setIPCache(public6, myip6)
   } else {
     dropKey(c, "ipv6/"+c.UserName)
   }
