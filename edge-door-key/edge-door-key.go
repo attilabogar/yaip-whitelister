@@ -179,7 +179,8 @@ func doorOpen(c conf, v4 bool, v6 bool) {
     })
     fmt.Println(os.Args[0] + ": door opened for "+c.UserName+"@" + myip4)
     setIPCache(public4, myip4)
-  } else {
+  }
+  if len(myip4) == 0 {
     dropKey(c, "ipv4/"+c.UserName)
   }
   // IPv6
@@ -193,12 +194,15 @@ func doorOpen(c conf, v4 bool, v6 bool) {
     })
     fmt.Println(os.Args[0] + ": door opened for "+c.UserName+"@" + myip6)
     setIPCache(public6, myip6)
-  } else {
+  }
+  if len(myip6) == 0 {
     dropKey(c, "ipv6/"+c.UserName)
   }
 }
 
 func doorClose(c conf) {
+  os.Remove(public4)
+  os.Remove(public6)
   dropKey(c, "ipv4/"+c.UserName)
   dropKey(c, "ipv6/"+c.UserName)
   fmt.Println(os.Args[0] + ": door closed for " + c.UserName)
