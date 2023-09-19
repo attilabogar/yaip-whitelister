@@ -153,7 +153,7 @@ func doorOpen(c conf, v4 bool, v6 bool) {
     myip4 = getIP4()
     oldip4 = getIPCache(public4)
     if len(myip4) == 0 {
-      fmt.Println(os.Args[0] + ": failed to retrive public IPv4")
+      fmt.Println(os.Args[0] + ": failed to retrieve public IPv4")
     } else if myip4 == oldip4 {
       fmt.Println(os.Args[0] + ": IPv4 still the same: " + myip4)
     }
@@ -162,7 +162,7 @@ func doorOpen(c conf, v4 bool, v6 bool) {
     myip6 = getIP6()
     oldip6 = getIPCache(public6)
     if len(myip6) == 0 {
-      fmt.Println(os.Args[0] + ": failed to retrive public IPv6")
+      fmt.Println(os.Args[0] + ": failed to retrieve public IPv6")
     } else if myip6 == oldip6 {
       fmt.Println(os.Args[0] + ": IPv6 still the same: " + myip6)
     }
