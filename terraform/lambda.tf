@@ -88,7 +88,7 @@ resource "aws_lambda_function" "whitelist" {
   handler          = "whitelist.lambda_handler"
   source_code_hash = data.archive_file.whitelist_handler_lambda_package.output_base64sha256
   publish          = true
-  runtime          = "python3.9"
+  runtime          = "python3.12"
 }
 
 resource "aws_lambda_permission" "allow_bucket" {

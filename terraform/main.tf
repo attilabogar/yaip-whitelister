@@ -49,17 +49,3 @@ resource "aws_iam_policy" "edge_policy_src" {
   description = "EDGE SRC Policy"
   policy      = data.aws_iam_policy_document.edge_user_src.json
 }
-
-resource "aws_iam_user" "edge_user" {
-  count = length(var.users)
-  name  = var.users[count.index]
-  path  = "/"
-}
-
-resource "aws_iam_policy_attachment" "edge_user_policy_attachment" {
-  count      = length(var.users)
-  name       = "edge_user_src_policy_attachment"
-  users      = var.users
-  policy_arn = aws_iam_policy.edge_policy_src.arn
-  depends_on = [aws_iam_user.edge_user]
-}

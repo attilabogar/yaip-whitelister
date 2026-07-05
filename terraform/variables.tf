@@ -17,8 +17,3 @@ variable "aws_profile" {
   type        = string
   description = "AWS profile for provisioning"
 }
-
-variable "users" {
-  type        = list(string)
-  description = "edge-door users"
-}
